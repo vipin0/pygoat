@@ -25,7 +25,7 @@ jobs:
       uses: actions/upload-artifact@v4.1.0
       if: always()
       with:
-        name: bandit-finding
+        name: bandit-findings
         path: bandit-report.json
 
   image_scan:
@@ -45,7 +45,28 @@ jobs:
       run: docker build -f Dockerfile -t myapp:latest .
 
     - name: Docker Scout Scan
-      uses: docker/scout-action@v1.2.2
+      run: |
+       curl -fsSL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh -o install-scout.sh
+       sh install-scout.sh
+       echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+       docker scout quickview
+       docker scout cves
+
+    # - name: Docker Scout Scan
+    #   uses: docker/scout-action@v1.2.2
+    #   with:
+    #    dockerhub-user: ${{ secrets.DOCKERHUB_USERNAME }}
+    #    dockerhub-password: ${{ secrets.DOCKERHUB_PASSWORD }}
+    #    command: quickview,cves
+    #    only-severities: critical,high
+    #    sarif-file: scout-report.sarif
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4.1.0
+      if: always()
+      with:
+        name: docker-scout-findings
+        path: scout-report.sarif
 
       
     
