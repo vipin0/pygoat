@@ -13,17 +13,39 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v5.0.0
       with:
-        python-version: 3.9
+        python-version: '3.9'
 
     - name: Install Bandit
       run: pip install bandit
 
     - name: Run Bandit Scan
-      run: bandit -ll -ii -r . -f json -o bandit-finding.json
+      run: bandit -ll -ii -r . -f json -o bandit-report.json
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4.1.0
       if: always()
       with:
-        path: bandit-finding.json
-  
+        name: bandit-finding
+        path: bandit-report.json
+
+  image_scan:
+    name: Build Image and Run Image Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code Repository 
+      uses: actions/checkout@v4.1.1
+      
+    - name: Setup Docker
+      uses: docker-practice/actions-setup-docker@v1
+      with:
+        docker_version: '23.0.3'
+      
+    - name: Build Docker Image
+      run: docker build -f Dockerfile -t myapp:latest .
+
+    - name: Docker Scout Scan
+      uses: docker/scout-action@v1.2.2
+
+      
+    
