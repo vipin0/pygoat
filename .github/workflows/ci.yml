@@ -38,6 +38,16 @@ jobs:
 
     - name: Run Bearer Scan
       uses: bearer/bearer-action@v2
+      with:
+        severity: critical,high
+        format: sarif
+        output: bearer-results.sarif
+        
+    - name: Upload SARIF file
+      if: always()
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: results.sarif
 
   image_scan:
     name: Build Image and Run Image Scan
@@ -78,6 +88,3 @@ jobs:
       with:
         name: docker-scout-findings
         path: scout-report.sarif
-
-      
-    
