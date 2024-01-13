@@ -2,7 +2,7 @@ name: CI
 on: [push]
 
 jobs:
-  sast_scan:
+  sast_bandit_scan:
     name: Run Bandit Scan
     runs-on: ubuntu-latest
 
@@ -27,6 +27,17 @@ jobs:
       with:
         name: bandit-findings
         path: bandit-report.json
+
+  sast_bearer_scan:
+    name: Run Bearer Scan
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code Repository 
+      uses: actions/checkout@v4.1.1
+
+    - name: Run Bearer Scan
+      uses: bearer/bearer-action@v2
 
   image_scan:
     name: Build Image and Run Image Scan
